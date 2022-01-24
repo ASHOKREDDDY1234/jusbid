@@ -1,0 +1,52 @@
+
+FROM nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+
+
+RUN mkdir -p /var/log/app_engine
+
+RUN mkdir -p /usr/share/nginx/www/_ah && \
+    echo "healthy" > /usr/share/nginx/www/_ah/health
+
+
+ADD dist/ /usr/share/nginx/www/sampleapp
+
+CMD ["/bin/sh",  "-c",  "envsubst < /usr/share/nginx/www/sampleapp/assets/envconfig.template.js > /usr/share/nginx/www/sampleapp/assets/envconfig.js && exec nginx -g 'daemon off;'"]
+
+events {
+   worker_connections 768;
+}
+
+http {
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # Logs will appear on the Google Developer's Console when logged to this
+    # directory.
+    access_log /var/log/app_engine/app.log;
+    error_log /var/log/app_engine/app.log;
+
+    gzip on;
+    gzip_disable "msie6";
+
+    server {
+        # Google App Engine expects the runtime to serve HTTP traffic from port 8080.
+        listen 8080;  
+
+        # Root directory and index files
+        index index.html index.htm;
+
+        location / {
+            root /usr/share/nginx/www/sampleapp;
+        }
+
+        location /sampleapp/ {
+        root /usr/share/nginx/www;
+        }
+    }
+}
