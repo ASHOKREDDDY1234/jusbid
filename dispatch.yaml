@@ -1,0 +1,8 @@
+  dispatch:
+  # Default service serves simple hostname request.
+  - url: "jusbid-310808.uc.r.appspot.com/"
+    service: default
+
+  # Dispatch UI
+  - url: "*/angular-ui-dev/*"
+    service: angular-ui-dev
