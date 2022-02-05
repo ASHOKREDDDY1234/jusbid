@@ -1,4 +1,4 @@
-(function(window) {
+ (function(window) {
       window["envconfig"] = window["envconfig"] || {};
 
       // Environment variables
